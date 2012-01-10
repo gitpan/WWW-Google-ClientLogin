@@ -5,11 +5,12 @@ use warnings;
 use Carp ();
 use LWP::UserAgent;
 use LWP::Protocol::https; # preload
+use HTTP::Request::Common qw(POST);
 
 use WWW::Google::ClientLogin::Response;
 
 use 5.008_001;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 our $URL = 'https://www.google.com/accounts/ClientLogin';
 
@@ -28,7 +29,7 @@ sub new {
 
 sub authenticate {
     my $self = shift;
-    my $http_response = $self->{ua}->post($URL, Content => [
+    my $http_request = POST $URL, [
         accountType => $self->{type},
         Email       => $self->{email},
         Passwd      => $self->{password},
@@ -36,7 +37,8 @@ sub authenticate {
         source      => $self->{source},
         $self->{logintoken}   ? (logintoken   => $self->{logintoken})   : (),
         $self->{logincaptcha} ? (logincaptcha => $self->{logincaptcha}) : (),
-    ]);
+    ];
+    my $http_response = $self->{ua}->request($http_request);
 
     my $res;
     if ($http_response->is_success) {
@@ -94,7 +96,7 @@ WWW::Google::ClientLogin - Yet Another Google ClientLogin Client Library
   use WWW::Google::ClientLogin;
 
   my $client = WWW::Google::ClientLogin->new(
-      email    => example@gmail.com
+      email    => 'example@gmail.com',
       password => 'password',
       service  => 'ac2dm',
   );
@@ -139,7 +141,7 @@ Required. User's password.
 
 =item service : Str
 
-Required. Each service using the Authorization service is assigned a name value. for example, the name associated with Google Calendar is 'cl'.
+Required. Each service using the Authorization service is assigned a name value. for example, the name associated with Google Calendar is C<< 'cl' >>.
 
 =item type : Str
 
