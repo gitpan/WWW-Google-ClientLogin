@@ -10,7 +10,7 @@ use HTTP::Request::Common qw(POST);
 use WWW::Google::ClientLogin::Response;
 
 use 5.008_001;
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 our $URL = 'https://www.google.com/accounts/ClientLogin';
 
@@ -102,7 +102,7 @@ WWW::Google::ClientLogin - Yet Another Google ClientLogin Client Library
   );
 
   my $res = $client->authenticate;
-  die $res->status_line if $res->has_error;
+  die $res->status_line if $res->is_error;
 
   my $auth_token = $res->auth_token;
 
@@ -172,7 +172,7 @@ SEE ALSO L<< http://code.google.com/intl/us/apis/accounts/docs/AuthForInstalledA
 Send authentication request for Google ClientLogin. Returned L<< WWW::Google::ClientLogin::Response >> object.
 
   my $res = $client->authenticate;
-  die $res->error_code if $res->has_error;
+  die $res->error_code if $res->is_error;
   my $auth_token = $res->auth_token;
 
 =head1 AUTHOR
